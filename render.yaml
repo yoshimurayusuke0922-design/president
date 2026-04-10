@@ -6,6 +6,6 @@ services:
     region: singapore
     rootDir: backend
     buildCommand: npm install && npm run build
-    startCommand: npm run start
+    startCommand: npx tsx src/server.ts
     healthCheckPath: /health
     autoDeployTrigger: commit

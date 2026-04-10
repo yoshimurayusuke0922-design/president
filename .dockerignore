@@ -1,0 +1,13 @@
+node_modules
+backend/dist
+frontend/dist
+.git
+.gitignore
+00_overview
+01_rules
+02_product
+03_architecture
+04_ai
+05_prompts
+external
+skills

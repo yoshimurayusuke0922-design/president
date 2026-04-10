@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: president-backend
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm ci && npm run build --workspace backend
+    startCommand: npm run start --workspace backend
+    healthCheckPath: /health
+    autoDeployTrigger: commit

@@ -7,4 +7,4 @@ $ErrorActionPreference = 'Stop'
 
 $normalizedBackendUrl = $BackendUrl.TrimEnd('/')
 
-npx --yes vercel --cwd frontend --prod --yes --build-env "VITE_SERVER_URL=$normalizedBackendUrl"
+npx --yes vercel --prod --yes --build-env "VITE_SERVER_URL=$normalizedBackendUrl"

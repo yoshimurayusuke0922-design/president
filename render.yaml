@@ -1,10 +1,10 @@
 services:
   - type: web
-    name: president-backend
-    runtime: node
+    name: president-backend-docker
+    runtime: docker
     plan: free
     region: singapore
-    buildCommand: npm ci && npm run build
-    startCommand: npm run start
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     healthCheckPath: /health
     autoDeployTrigger: commit

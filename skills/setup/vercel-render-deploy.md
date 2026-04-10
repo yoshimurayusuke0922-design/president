@@ -22,6 +22,7 @@
 補足:
 - Render Free は 15 分アイドルで sleep する
 - active なゲーム中は動き続ける
+- backend だけを Render に置く。frontend は Vercel に出す
 
 ## Vercel frontend
 

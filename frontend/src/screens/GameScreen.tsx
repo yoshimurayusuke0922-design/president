@@ -78,16 +78,6 @@ function createCardIdsKey(cardIds: string[]): string {
   return [...cardIds].sort().join('|');
 }
 
-function canSelectionReachLegalMove(selectedCardIds: string[], legalMoveCardIds: string[][]): boolean {
-  if (selectedCardIds.length === 0) {
-    return true;
-  }
-
-  return legalMoveCardIds.some(
-    (legalMove) => selectedCardIds.length <= legalMove.length && selectedCardIds.every((cardId) => legalMove.includes(cardId))
-  );
-}
-
 function isInlineHandEffect(
   effect: PendingEffectView | null
 ): effect is Extract<PendingEffectView, { type: 'seven-pass' | 'ten-discard' | 'exchange' }> {
@@ -168,15 +158,12 @@ export function GameScreen({
   const latestLogEntry = game?.latestLogEntry ?? null;
   const handInteractionStateRef = useRef<{
     inlinePendingEffect: typeof inlinePendingEffect;
-    legalMoveCardIds: string[][];
   }>({
-    inlinePendingEffect: null,
-    legalMoveCardIds: []
+    inlinePendingEffect: null
   });
 
   handInteractionStateRef.current = {
-    inlinePendingEffect,
-    legalMoveCardIds
+    inlinePendingEffect
   };
 
   useEffect(() => {
@@ -185,8 +172,12 @@ export function GameScreen({
   }, [hand]);
 
   useEffect(() => {
-    setSelectedCardIds((current) => (canSelectionReachLegalMove(current, legalMoveCardIds) ? current : []));
-  }, [legalMoveCardIds]);
+    if (isMyTurn && !pendingEffect && !game?.pendingClearReason) {
+      return;
+    }
+
+    setSelectedCardIds([]);
+  }, [isMyTurn, pendingEffect, game?.pendingClearReason]);
 
   useEffect(() => {
     if (game?.pendingClearReason) {
@@ -310,7 +301,7 @@ export function GameScreen({
   const revolutionBurstClassName = `revolution-burst ${revolutionBurstEvent?.isCounter ? 'is-counter' : ''}`.trim();
   const inlineConfirmCount = inlinePendingEffect?.count ?? 0;
   const handleHandToggle = useCallback((cardId: string) => {
-    const { inlinePendingEffect: activeInlineEffect, legalMoveCardIds: activeLegalMoveCardIds } = handInteractionStateRef.current;
+    const { inlinePendingEffect: activeInlineEffect } = handInteractionStateRef.current;
 
     if (activeInlineEffect) {
       setEffectSelection((current) => {
@@ -329,8 +320,7 @@ export function GameScreen({
         return current.filter((id) => id !== cardId);
       }
 
-      const next = [...current, cardId];
-      return canSelectionReachLegalMove(next, activeLegalMoveCardIds) ? next : current;
+      return [...current, cardId];
     });
   }, []);
 

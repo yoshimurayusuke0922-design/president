@@ -22,8 +22,8 @@ function HandAreaComponent({ cards, selectedCardIds, disabled, onToggle }: HandA
         const distance = index - center;
         const maxDistance = Math.max(center, 1);
         const normalizedDistance = Math.abs(distance) / maxDistance;
-        const fanRotation = cards.length >= 12 ? 3 : 3.25;
-        const edgePull = cards.length >= 12 ? 0.84 : cards.length >= 9 ? 0.72 : 0.58;
+        const fanRotation = cards.length >= 12 ? 2.45 : cards.length >= 9 ? 2.7 : 2.95;
+        const edgePull = cards.length >= 12 ? 0.62 : cards.length >= 9 ? 0.54 : 0.44;
         const rotation = `${distance * fanRotation}deg`;
         const lift = `${(maxDistance - Math.abs(distance)) * 0.22}rem`;
         const inwardShift = `${-Math.sign(distance) * Math.pow(normalizedDistance, 1.35) * edgePull}rem`;

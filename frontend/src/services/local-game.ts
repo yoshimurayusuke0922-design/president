@@ -5,6 +5,7 @@ import type { GameState, LobbyPlayer, PendingEffectView, ResolveEffectPayload, R
 import { createRoomCode } from '../../../backend/src/game/utils/ids.js';
 import { normalizeCpuDisplayName, pickCpuNames } from '../../../backend/src/game/utils/names.js';
 import { createUuid } from '../../../backend/src/game/utils/uuid.js';
+import { snapshotRoomView } from '../../../backend/src/game/view/room-view.js';
 import type { PlayerView, Rank, RoomSettings, RoomView } from '../types/game';
 
 type LocalRoomState = {
@@ -323,7 +324,7 @@ class LocalGameManager {
 
     const room = this.room;
 
-    return {
+    return snapshotRoomView({
       roomId: room.roomId,
       hostPlayerId: room.hostPlayerId,
       players: toPlayerView(room, this.selfPlayerId),
@@ -353,7 +354,7 @@ class LocalGameManager {
         : null,
       lastFinishedOrder: room.lastFinishedOrder,
       selfPlayerId: this.selfPlayerId
-    };
+    });
   }
 
   private syncRoomState(): void {

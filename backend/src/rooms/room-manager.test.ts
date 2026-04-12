@@ -51,4 +51,37 @@ describe('room manager', () => {
     expect(formerHost?.isDisconnected).toBe(true);
     expect(formerHost?.isAutoControlled).toBe(true);
   });
+
+  it('returns immutable room snapshots during a game so previous views do not mutate after plays', () => {
+    const manager = createManager();
+    const host = manager.createRoom('socket-host', 'Host');
+
+    manager.updateSettings(host.roomId, host.playerId, { cpuCount: 3 });
+    manager.startGame(host.roomId, host.playerId);
+
+    const initialView = manager.getRoomView(host.roomId, host.playerId);
+    const activePlayerId = initialView.gameState?.currentPlayerId;
+
+    expect(activePlayerId).toBeTruthy();
+
+    const beforePlayView = manager.getRoomView(host.roomId, activePlayerId ?? host.playerId);
+    const selectedCardIds = beforePlayView.gameState?.legalMoveCardIds[0] ?? [];
+    const beforeHandIds = beforePlayView.players
+      .find((player) => player.id === activePlayerId)
+      ?.hand?.map((card) => card.id) ?? [];
+
+    expect(beforePlayView.gameState?.table.currentMeld).toBeNull();
+    expect(selectedCardIds.length).toBeGreaterThan(0);
+
+    manager.playCards(host.roomId, activePlayerId ?? host.playerId, selectedCardIds);
+
+    const afterPlayView = manager.getRoomView(host.roomId, activePlayerId ?? host.playerId);
+    const afterHand = afterPlayView.players.find((player) => player.id === activePlayerId)?.hand ?? [];
+    const tableCardIds = afterPlayView.gameState?.table.currentMeld?.cards.map((card) => card.id).sort() ?? [];
+
+    expect(beforePlayView.gameState?.table.currentMeld).toBeNull();
+    expect(beforePlayView.players.find((player) => player.id === activePlayerId)?.hand?.map((card) => card.id) ?? []).toEqual(beforeHandIds);
+    expect(tableCardIds).toEqual([...selectedCardIds].sort());
+    expect(afterHand).toHaveLength(beforeHandIds.length - selectedCardIds.length);
+  });
 });

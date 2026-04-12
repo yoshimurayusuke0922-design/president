@@ -1,6 +1,7 @@
 import { chooseCpuTurnAction, resolveCpuPendingEffect } from '../game/ai/strategy.js';
 import { createDefaultRoomSettings } from '../game/core/config.js';
 import { advancePendingResolution, createGameState, getLegalMoveCardIds, passTurn, playCards, resolvePendingEffect } from '../game/core/engine.js';
+import { snapshotRoomView } from '../game/view/room-view.js';
 import type {
   GameState,
   LobbyPlayer,
@@ -463,7 +464,7 @@ export class RoomManager {
   }
 
   private toRoomView(room: RoomState, selfPlayerId: string): RoomView {
-    return {
+    return snapshotRoomView({
       roomId: room.roomId,
       hostPlayerId: room.hostPlayerId,
       players: toPlayerView(room, selfPlayerId),
@@ -493,7 +494,7 @@ export class RoomManager {
         : null,
       lastFinishedOrder: room.lastFinishedOrder,
       selfPlayerId
-    };
+    });
   }
 
   private syncRoomState(room: RoomState): void {
